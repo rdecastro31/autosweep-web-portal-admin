@@ -1,0 +1,109 @@
+body {
+  background: #f8f9fb;
+}
+
+.login-page {
+  min-height: 100vh;
+}
+
+/* LEFT PANEL */
+.left-panel {
+  background: url('../images/background.jpg') no-repeat center center;
+  background-size: cover;
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* ✅ GRAY OVERLAY */
+.left-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+ background: rgba(0, 0, 0, 0.5); /* adjust opacity if needed */
+  z-index: 1;
+}
+
+/* CONTENT ABOVE OVERLAY */
+.left-content {
+  position: relative;
+  z-index: 2;
+  max-width: 700px;
+  padding: 60px;
+  color: rgba(255, 255, 255, 0.9); /* softer white */
+}
+
+.left-content h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #ffffff;
+  letter-spacing: 0.5px;
+}
+
+.left-content p {
+  margin-top: 15px;
+  font-size: 1.05rem;
+  color: rgba(255, 255, 255, 0.75); /* softer paragraph */
+  line-height: 1.6;
+}
+
+/* RIGHT SIDE */
+.col-md-5 {
+  background: #ffffff;
+}
+
+.login-form-wrapper {
+  width: 100%;
+  max-width: 380px;
+}
+
+/* INPUTS */
+.form-control {
+  height: 48px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
+  transition: all 0.2s ease;
+}
+
+.form-control:focus {
+  box-shadow: none;
+  border-color: #198754; /* bootstrap green */
+}
+
+/* BUTTON */
+.login-btn {
+  height: 48px;
+  border-radius: 10px;
+  background: #198754;
+  border: none;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.login-btn:hover {
+  background: #fd7e14; /* orange */
+}
+
+/* FORGOT PASSWORD */
+.forgot-link {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.forgot-link:hover {
+  color: #198754;
+}
+
+/* MOBILE */
+@media (max-width: 767px) {
+  .login-form-wrapper {
+    max-width: 100%;
+    padding: 20px;
+  }
+
+  .left-content {
+    padding: 30px;
+    text-align: center;
+  }
+}

@@ -1,0 +1,145 @@
+html {
+  overflow-y: scroll;
+}
+
+.main-accounts-page {
+  padding: 4px 2px;
+}
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.page-subtitle {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+.top-card,
+.result-card {
+  border: 0;
+  border-radius: 20px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+}
+
+.search-panel {
+  padding: 8px;
+  background: linear-gradient(180deg, #f8fafc 0%, #ffffff 100%);
+  border-radius: 18px;
+  border: 1px solid #eef2f7;
+}
+
+.section-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 14px;
+}
+
+.table-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin-bottom: 14px;
+}
+
+.custom-table {
+  margin-bottom: 0;
+}
+
+.custom-table thead th {
+  background: #f8fafc;
+  color: #475569;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-bottom: 1px solid #e5e7eb;
+  white-space: nowrap;
+}
+
+.custom-table tbody td {
+  vertical-align: middle;
+  border-color: #eef2f7;
+  color: #1f2937;
+  font-size: 0.92rem;
+}
+
+.action-cell {
+  white-space: nowrap;
+  min-width: 220px;
+}
+
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: nowrap;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.action-btn:hover,
+.action-btn:focus,
+.action-btn:active {
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 56px 20px;
+  color: #6b7280;
+  background: #fafafa;
+  border: 1px dashed #d1d5db;
+  border-radius: 18px;
+}
+
+.account-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.summary-box {
+  background: #f8fafc;
+  border: 1px solid #edf2f7;
+  border-radius: 16px;
+  padding: 14px;
+}
+
+.summary-label {
+  font-size: 0.78rem;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.summary-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #111827;
+  word-break: break-word;
+}
