@@ -159,13 +159,14 @@ const generatePassword = (length = 10) => {
     setSubmittingAddUser(true);
 
     const formData = new FormData();
-    formData.append("tag", "add_user");
+    formData.append("tag", "insert");
     formData.append("email", addUserFormData.email);
     formData.append("name", addUserFormData.name);
     formData.append("userlevel", addUserFormData.userlevel);
 
-    const response = await axios.post(API_URL, formData);
+    const response = await axios.post(USERS_URL, formData);
     const data = response.data;
+    console.log(data)
 
     if (data.success === 1) {
       Swal.fire({

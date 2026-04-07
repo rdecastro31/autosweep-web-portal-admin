@@ -9,6 +9,7 @@ import {
   FiSettings,
   FiDatabase,
 } from "react-icons/fi";
+import logo from "../assets/images/logo.png"
 
 function Sidebar() {
   const user = JSON.parse(localStorage.getItem("user")) || {};
@@ -47,13 +48,13 @@ function Sidebar() {
       to: "/dashboard/tickets",
       icon: <FiFileText />,
       label: "Tickets",
-      roles: ["Administrator", "System User"],
+      roles: ["Administrator"],
     },
     {
       to: "/dashboard/transactions",
       icon: <FiCreditCard />,
       label: "Transactions",
-      roles: ["Administrator", "System User"],
+      roles: ["Administrator"],
     },
     {
       divider: true,
@@ -79,8 +80,9 @@ function Sidebar() {
 
   return (
     <div className="sidebar">
+    <img src={logo}></img>
       <div className="sidebar-brand">Web Portal Admin</div>
-
+  
       <Nav className="flex-column sidebar-nav">
         {allowedMenuItems.map((item, index) =>
           item.divider ? (

@@ -17,7 +17,7 @@ import "./App.css";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/WebAdmin">
       <Routes>
         <Route path="/" element={<Login />} />
 
