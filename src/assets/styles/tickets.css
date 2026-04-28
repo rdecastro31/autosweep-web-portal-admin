@@ -1,0 +1,277 @@
+/* PAGE */
+.tickets-page {
+  padding: 4px 2px;
+}
+
+/* HEADER (reuse dashboard pattern) */
+.tickets-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+
+.tickets-header h1 {
+  margin: 0;
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.tickets-header p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 0.95rem;
+}
+
+/* BUTTON */
+.btn-create-ticket {
+  background: #198754;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 16px;
+  color: #fff;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.btn-create-ticket:hover {
+  background: #157347;
+}
+
+/* =========================
+   STAT CARDS (USE GLOBAL)
+========================= */
+.ticket-stat-card {
+  /* NO heavy styling here — dashboard.css already handles it */
+}
+
+/* ICON BOX */
+.ticket-icon-box {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  background: #e8f5e9;
+  color: #198754;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+/* =========================
+   PANEL / TABLE CARD
+========================= */
+.tickets-panel-card {
+  /* inherits card style from dashboard.css */
+}
+
+/* TOOLBAR */
+.tickets-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.tickets-toolbar h5 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #1f2937;
+  margin: 0;
+}
+
+.tickets-toolbar p {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 0.85rem;
+}
+
+/* FILTER GROUP */
+.ticket-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* INPUTS */
+.ticket-search-input {
+  width: 260px;
+}
+
+.ticket-filter-select {
+  width: 140px;
+}
+
+/* NORMALIZE INPUT STYLE */
+.ticket-search-input,
+.ticket-filter-select {
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  font-size: 0.9rem;
+}
+
+.ticket-search-input:focus,
+.ticket-filter-select:focus {
+  border-color: #198754;
+  box-shadow: 0 0 0 0.15rem rgba(25, 135, 84, 0.15);
+}
+
+/* =========================
+   TABLE
+========================= */
+.custom-table {
+  margin-bottom: 0;
+}
+
+.ticket-no {
+  font-weight: 700;
+  color: #198754;
+}
+
+/* =========================
+   ACTION BUTTONS
+========================= */
+.ticket-action-group {
+  display: flex;
+  gap: 6px;
+}
+
+.ticket-action-btn {
+  padding: 6px 10px;
+  font-size: 0.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  border: none;
+}
+
+.ticket-action-btn.view {
+  background: #f3f4f6;
+  color: #374151;
+}
+
+.ticket-action-btn.edit {
+  background: #198754;
+  color: #fff;
+}
+
+.ticket-action-btn.view:hover {
+  background: #e5e7eb;
+}
+
+.ticket-action-btn.edit:hover {
+  background: #157347;
+}
+
+/* LIGHT BADGES (SOFT STYLE) */
+.badge {
+  font-weight: 600;
+  font-size: 0.75rem;
+  padding: 5px 10px;
+  border-radius: 999px;
+}
+
+/* STATUS */
+.badge-open {
+  background: #fff7e6;
+  color: #b7791f;
+}
+
+.badge-progress {
+  background: #eef4ff;
+  color: #1d4ed8;
+}
+
+.badge-closed {
+  background: #e8f5e9;
+  color: #198754;
+}
+
+/* PRIORITY */
+.badge-high {
+  background: #fde8e8;
+  color: #b42318;
+}
+
+.badge-medium {
+  background: #fff7e6;
+  color: #b7791f;
+}
+
+.badge-low {
+  background: #e8f5e9;
+  color: #198754;
+}
+
+/* =========================
+   EMPTY STATE
+========================= */
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: #6b7280;
+  font-size: 0.9rem;
+}
+
+.tickets-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 18px;
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.pagination-buttons {
+  display: flex;
+  gap: 8px;
+}
+
+.pagination-buttons button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  padding: 7px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.pagination-buttons button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+/* =========================
+   RESPONSIVE
+========================= */
+@media (max-width: 991px) {
+  .ticket-filter-group {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+
+  .ticket-search-input {
+    flex: 1;
+    min-width: 220px;
+  }
+}
+
+@media (max-width: 767px) {
+  .tickets-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .ticket-filter-group {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .ticket-search-input,
+  .ticket-filter-select {
+    width: 100%;
+  }
+}

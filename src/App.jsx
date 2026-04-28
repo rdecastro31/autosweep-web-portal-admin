@@ -9,8 +9,10 @@ import Home from "./pages/dashboard/Home";
 import MainAccounts from "./pages/dashboard/MainAccounts";
 import SubAccounts from "./pages/dashboard/SubAccounts";
 import Tickets from "./pages/dashboard/Tickets";
+import SearchTicket from "./pages/dashboard/SearchTicket";
 import AMS from "./pages/dashboard/AMS";
 import Users from "./pages/dashboard/Users";
+
 
 
 import "./App.css";
@@ -24,7 +26,7 @@ function App() {
         <Route
           path="/dashboard"
           element={
-            <ProtectedRoute allowedRoles={["Administrator", "System User"]}>
+            <ProtectedRoute allowedRoles={["Administrator", "System User", "Mancom"]}>
               <Dashboard />
             </ProtectedRoute>
           }
@@ -34,6 +36,7 @@ function App() {
           <Route path="sub-accounts" element={<SubAccounts />} />
           <Route path="ams" element={<AMS />} />
           <Route path="tickets" element={<Tickets />} />
+          <Route path="search-ticket" element={<SearchTicket />} />
 
           <Route
             path="users"

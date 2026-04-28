@@ -23,6 +23,9 @@ import {
   FaUndo,
   FaTrash,
   FaUnlock,
+  FaEnvelope,
+  FaCar,
+  FaUserEdit
 } from "react-icons/fa";
 import Swal from "sweetalert2";
 import "../../assets/styles/mainaccount.css";
@@ -33,6 +36,9 @@ import UpdateLockoutModal from "../../components/modals/UpdateLockoutModal";
 import AddAccountModal from "../../components/modals/AddAccountModal";
 import DownloadSOAModal from "../../components/modals/SOAModal";
 import AddSubAccountModal from "../../components/modals/AddSubAccountModal";
+import UpdateEmailModal from "../../components/modals/UpdateEmailModal";
+import UpdatePlateModal from "../../components/modals/UpdatePlateModal";
+import UpdateCustomerNameModal from "../../components/modals/UpdateCustomerNameModal";
 
 import { API_URL } from "../../constants/urls";
 
@@ -99,6 +105,463 @@ export default function MainAccounts() {
     gname: "",
   });
 
+
+  //Update Email Modal
+    // Update Email States
+  const [showEmailModal, setShowEmailModal] = useState(false);
+  const [emailSubmitting, setEmailSubmitting] = useState(false);
+  const [emailFormData, setEmailFormData] = useState({
+    userid: "",
+    account_number: "",
+    current_email: "",
+    new_email: "",
+  });
+
+
+    // Update Plate States
+  const [showPlateModal, setShowPlateModal] = useState(false);
+  const [plateSubmitting, setPlateSubmitting] = useState(false);
+  const [plateFormData, setPlateFormData] = useState({
+    id: "",
+    accountType: "",
+    account_number: "",
+    current_plate: "",
+    new_plate: "",
+  });
+
+
+
+  // Update Customer Name States
+  const [showCustomerNameModal, setShowCustomerNameModal] = useState(false);
+  const [customerNameSubmitting, setCustomerNameSubmitting] = useState(false);
+  const [customerNameFormData, setCustomerNameFormData] = useState({
+    userid: "",
+    account_number: "",
+    current_name: "",
+    new_name: "",
+  });
+
+  const sanitizeCustomerName = (value) => {
+    return String(value || "")
+      .replace(/[^A-Za-z0-9\s-]/g, "")
+      .slice(0, 80);
+  };
+
+  const handleOpenCustomerNameModal = (account) => {
+    setSelectedAccount(account);
+    setCustomerNameFormData({
+      userid: account.id || "",
+      account_number: account.account_number || "",
+      current_name: account.name || "",
+      new_name: "",
+    });
+    setShowCustomerNameModal(true);
+  };
+
+    const handleCloseCustomerNameModal = () => {
+    if (customerNameSubmitting) return;
+
+    setShowCustomerNameModal(false);
+    setSelectedAccount(null);
+    setCustomerNameFormData({
+      userid: "",
+      account_number: "",
+      current_name: "",
+      new_name: "",
+    });
+  };
+
+
+  const isValidCustomerName = (value) => {
+    const trimmed = String(value || "").trim();
+    return trimmed.length > 0 && trimmed.length <= 80 && /^[A-Za-z0-9\s-]+$/.test(trimmed);
+  };
+
+   const handleSubmitUpdateCustomerName = async () => {
+    try {
+      if (!selectedAccount) return;
+
+      const trimmedName = String(customerNameFormData.new_name || "").trim();
+
+      if (!trimmedName) {
+        Swal.fire({
+          icon: "warning",
+          title: "Missing Customer Name",
+          text: "Please enter a new customer name.",
+        });
+        return;
+      }
+
+      if (trimmedName.length > 80) {
+        Swal.fire({
+          icon: "warning",
+          title: "Invalid Customer Name",
+          text: "Customer name must not exceed 80 characters.",
+        });
+        return;
+      }
+
+      if (!/^[A-Za-z0-9\s-]+$/.test(trimmedName)) {
+        Swal.fire({
+          icon: "warning",
+          title: "Invalid Customer Name",
+          text: "Only letters, numbers, spaces, and dash (-) are allowed.",
+        });
+        return;
+      }
+
+      if (
+        trimmedName.toLowerCase() ===
+        String(customerNameFormData.current_name || "").trim().toLowerCase()
+      ) {
+        Swal.fire({
+          icon: "info",
+          title: "No Changes Detected",
+          text: "The new customer name is the same as the current customer name.",
+        });
+        return;
+      }
+
+      setCustomerNameSubmitting(true);
+
+      Swal.fire({
+        title: "Updating Customer Name...",
+        html: "Please wait while we update the customer name.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const formData = new FormData();
+      formData.append("tag", "update_name");
+      formData.append("userid", customerNameFormData.userid);
+      formData.append("account", customerNameFormData.account_number);
+      formData.append("username", username);
+      formData.append("name", trimmedName);
+
+      const response = await axios.post(API_URL, formData);
+      const data = response.data;
+
+      if (data.success === 1) {
+        setMainAccount((prev) => ({
+          ...prev,
+          name: trimmedName,
+        }));
+
+        await Swal.fire({
+          icon: "success",
+          title: "Customer Name Updated",
+          text: data.msg || "Customer name successfully updated.",
+          confirmButtonColor: "#009245",
+        });
+
+        handleCloseCustomerNameModal();
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Update Failed",
+          text: data.msg || "Something went wrong while updating the customer name.",
+        });
+      }
+    } catch (error) {
+      console.error(
+        "Update customer name error:",
+        error.response?.data || error.message
+      );
+
+      Swal.fire({
+        icon: "error",
+        title: "Request Failed",
+        text: "Something went wrong while updating the customer name.",
+      });
+    } finally {
+      setCustomerNameSubmitting(false);
+    }
+  };
+
+    const handleOpenPlateModal = (account, type) => {
+    setSelectedAccount(account);
+    setAccountType(type);
+
+    setPlateFormData({
+      id: account.id || "",
+      accountType: type,
+      account_number: account.account_number || "",
+      current_plate: account.plate_number || "",
+      new_plate: "",
+    });
+
+    setShowPlateModal(true);
+  };
+
+  const handleClosePlateModal = () => {
+    if (plateSubmitting) return;
+
+    setShowPlateModal(false);
+    setSelectedAccount(null);
+    setAccountType("");
+    setPlateFormData({
+      id: "",
+      accountType: "",
+      account_number: "",
+      current_plate: "",
+      new_plate: "",
+    });
+  };
+
+
+ const handleSubmitUpdatePlate = async () => {
+  try {
+    if (!selectedAccount) return;
+
+    const trimmedPlate = String(plateFormData.new_plate || "").trim().toUpperCase();
+    const accountNumber = String(plateFormData.account_number || "").trim();
+
+    // ✅ NEW: Validate Account Number
+    if (!accountNumber) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Account Number",
+        text: "Please enter an account number.",
+      });
+      return;
+    }
+
+    const trimmedAccount = accountNumber.replace(/\D/g, "");
+
+    if (!trimmedAccount) {
+      Swal.fire({
+        icon: "warning",
+        title: "Invalid Account Number",
+        text: "Account number must contain only numbers.",
+      });
+      return;
+    }
+
+    if (!trimmedPlate) {
+      Swal.fire({
+        icon: "warning",
+        title: "Missing Plate Number",
+        text: "Please enter a new plate number.",
+      });
+      return;
+    }
+
+    if (trimmedPlate.length > 9) {
+      Swal.fire({
+        icon: "warning",
+        title: "Invalid Plate Number",
+        text: "Plate number must not exceed 9 characters.",
+      });
+      return;
+    }
+
+    if (
+      trimmedPlate ===
+      String(plateFormData.current_plate || "").trim().toUpperCase()
+    ) {
+      Swal.fire({
+        icon: "info",
+        title: "No Changes Detected",
+        text: "The new plate number is the same as the current plate number.",
+      });
+      return;
+    }
+
+    setPlateSubmitting(true);
+
+    Swal.fire({
+      title: "Updating Plate...",
+      html: "Please wait while we update the plate number.",
+      allowOutsideClick: false,
+      allowEscapeKey: false,
+      didOpen: () => {
+        Swal.showLoading();
+      },
+    });
+
+    const formData = new FormData();
+    formData.append("tag", "update_plate");
+    formData.append("username", username);
+    formData.append("userid", plateFormData.id);
+    formData.append("accountType", plateFormData.accountType);
+    formData.append("plate", trimmedPlate);
+    formData.append("account", trimmedAccount); // ✅ cleaned numeric value
+
+    const response = await axios.post(API_URL, formData);
+    const data = response.data;
+
+    if (data.success === 1) {
+      if (plateFormData.accountType === "main") {
+        setMainAccount((prev) => ({
+          ...prev,
+          plate_number: trimmedPlate,
+        }));
+      }
+
+      if (plateFormData.accountType === "sub") {
+        setSubaccounts((prev) =>
+          prev.map((item) =>
+            item.id === selectedAccount.id
+              ? { ...item, plate_number: trimmedPlate }
+              : item
+          )
+        );
+      }
+
+      await Swal.fire({
+        icon: "success",
+        title: "Plate Updated",
+        text: data.msg || "Plate number successfully updated.",
+        confirmButtonColor: "#009245",
+      });
+
+      handleClosePlateModal();
+    } else {
+      Swal.fire({
+        icon: "error",
+        title: "Update Failed",
+        text: data.msg || "Something went wrong while updating the plate number.",
+      });
+    }
+  } catch (error) {
+    console.error("Update plate error:", error.response?.data || error.message);
+
+    Swal.fire({
+      icon: "error",
+      title: "Request Failed",
+      text: "Something went wrong while updating the plate number.",
+    });
+  } finally {
+    setPlateSubmitting(false);
+  }
+};
+
+
+  const handleOpenEmailModal = (account) => {
+    setSelectedAccount(account);
+    setEmailFormData({
+      userid: account.id || "",
+      account_number: account.account_number || "",
+      current_email: account.email || "",
+      new_email: "",
+    });
+    setShowEmailModal(true);
+  };
+
+ const handleCloseEmailModal = () => {
+    if (emailSubmitting) return;
+
+    setShowEmailModal(false);
+    setSelectedAccount(null);
+    setEmailFormData({
+      userid: "",
+      account_number: "",
+      current_email: "",
+      new_email: "",
+    });
+  };
+
+
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email).trim());
+  };
+
+
+   const handleSubmitUpdateEmail = async () => {
+    try {
+      if (!selectedAccount) return;
+
+      const trimmedEmail = emailFormData.new_email.trim();
+
+      if (!trimmedEmail) {
+        Swal.fire({
+          icon: "warning",
+          title: "Missing Email",
+          text: "Please enter a new email address.",
+        });
+        return;
+      }
+
+      if (!isValidEmail(trimmedEmail)) {
+        Swal.fire({
+          icon: "warning",
+          title: "Invalid Email Format",
+          text: "Please enter a valid email address.",
+        });
+        return;
+      }
+
+      if (trimmedEmail.toLowerCase() === String(emailFormData.current_email).trim().toLowerCase()) {
+        Swal.fire({
+          icon: "info",
+          title: "No Changes Detected",
+          text: "The new email is the same as the current email.",
+        });
+        return;
+      }
+
+      setEmailSubmitting(true);
+
+      Swal.fire({
+        title: "Updating Email...",
+        html: "Please wait while we update the account email.",
+        allowOutsideClick: false,
+        allowEscapeKey: false,
+        didOpen: () => {
+          Swal.showLoading();
+        },
+      });
+
+      const formData = new FormData();
+      formData.append("tag", "update_email");
+      formData.append("userid", emailFormData.userid);
+      formData.append("account", emailFormData.account_number);
+      formData.append("username", username);
+      formData.append("email", trimmedEmail);
+
+      const response = await axios.post(API_URL, formData);
+      const data = response.data;
+
+      if (data.success === 1) {
+        setMainAccount((prev) => ({
+          ...prev,
+          email: trimmedEmail,
+        }));
+
+        await Swal.fire({
+          icon: "success",
+          title: "Email Updated",
+          text: data.msg || "Account email successfully updated.",
+          confirmButtonColor: "#009245",
+        });
+
+        handleCloseEmailModal();
+      } else {
+        Swal.fire({
+          icon: "error",
+          title: "Update Failed",
+          text: data.msg || "Something went wrong while updating the email.",
+        });
+      }
+    } catch (error) {
+      console.error("Update email error:", error.response?.data || error.message);
+
+      Swal.fire({
+        icon: "error",
+        title: "Request Failed",
+        text: "Something went wrong while updating the email.",
+      });
+    } finally {
+      setEmailSubmitting(false);
+    }
+  };
+
+
+
+
   const handleOpenAddSubModal = () => {
     if (!mainAccount) return;
 
@@ -141,15 +604,17 @@ export default function MainAccounts() {
 
       const formData = new FormData();
       formData.append("tag", "add_subaccount");
-      formData.append("main_account_id", addSubFormData.main_account_id);
-      formData.append("email", addSubFormData.email);
+      formData.append("username", username);
+      formData.append("mainAccountID", addSubFormData.main_account_id);
+      formData.append("mainAccountEmail", addSubFormData.email);
       formData.append("account", addSubFormData.account_number);
       formData.append("plate", addSubFormData.plate_number);
-      formData.append("gname", addSubFormData.gname);
-      formData.append("username", username);
-
+      formData.append("alias", addSubFormData.gname);
+    
+      console.log(addSubFormData)
       const response = await axios.post(API_URL, formData);
       const data = response.data;
+      console.log(data)
 
       if (data.success === 1) {
         Swal.fire({
@@ -275,6 +740,8 @@ export default function MainAccounts() {
 
       const response = await axios.post(API_URL, formData);
       const data = response.data;
+
+      console.log(data)
 
       if (data.success === 1) {
         Swal.fire({
@@ -798,6 +1265,42 @@ export default function MainAccounts() {
               <FaKey size={14} />
             </Button>
           </OverlayTrigger>
+
+          
+        )}
+
+         {type === "main" && (
+          <OverlayTrigger
+            placement="top"
+            overlay={<Tooltip id={`tooltip-email-${account.id}`}>Update Email</Tooltip>}
+          >
+            <Button
+              variant="outline-info"
+              className="action-btn"
+              onClick={() => handleOpenEmailModal(account)}
+            >
+              <FaEnvelope size={14} />
+            </Button>
+          </OverlayTrigger>
+        )}
+
+              {type === "main" && (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-customer-name-${account.id}`}>
+                Update Customer Name
+              </Tooltip>
+            }
+          >
+            <Button
+              variant="outline-secondary"
+              className="action-btn"
+              onClick={() => handleOpenCustomerNameModal(account)}
+            >
+              <FaUserEdit size={14} />
+            </Button>
+          </OverlayTrigger>
         )}
 
         <OverlayTrigger
@@ -823,6 +1326,19 @@ export default function MainAccounts() {
             onClick={() => handleOpenSOA(account)}
           >
             <FaFileDownload size={14} />
+          </Button>
+        </OverlayTrigger>
+
+            <OverlayTrigger
+          placement="top"
+          overlay={<Tooltip id={`tooltip-plate-${account.id}`}>Update Account/Plate</Tooltip>}
+        >
+          <Button
+            variant="outline-info"
+            className="action-btn"
+            onClick={() => handleOpenPlateModal(account, type)}
+          >
+            <FaCar size={14} />
           </Button>
         </OverlayTrigger>
 
@@ -1171,6 +1687,35 @@ export default function MainAccounts() {
         setFormData={setAddSubFormData}
         onSubmitAddSubAccount={handleSubmitAddSubAccount}
         submitting={submittingAddSub}
+      />
+
+            <UpdateEmailModal
+        show={showEmailModal}
+        onHide={handleCloseEmailModal}
+        formData={emailFormData}
+        setFormData={setEmailFormData}
+        onSubmitUpdateEmail={handleSubmitUpdateEmail}
+        submitting={emailSubmitting}
+      />
+
+        <UpdatePlateModal
+        show={showPlateModal}
+        onHide={handleClosePlateModal}
+        formData={plateFormData}
+        setFormData={setPlateFormData}
+        onSubmitUpdatePlate={handleSubmitUpdatePlate}
+        submitting={plateSubmitting}
+      />
+
+
+        <UpdateCustomerNameModal
+        show={showCustomerNameModal}
+        onHide={handleCloseCustomerNameModal}
+        formData={customerNameFormData}
+        setFormData={setCustomerNameFormData}
+        onSubmitUpdateCustomerName={handleSubmitUpdateCustomerName}
+        sanitizeCustomerName={sanitizeCustomerName}
+        submitting={customerNameSubmitting}
       />
     </div>
   );

@@ -12,16 +12,48 @@ import {
 import axios from "axios";
 import { DASHBOARD_URL } from "../../constants/urls";
 
+const DASHBOARD_CACHE_KEY = "dashboard_summary_cache";
+const DASHBOARD_CACHE_TIME_KEY = "dashboard_summary_cache_time";
+const CACHE_DURATION = 1000 * 60 * 2; // 2 minutes
+
 export default function Home() {
   const [dashboardData, setDashboardData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
+  const user = JSON.parse(localStorage.getItem("user")) || {};
+  const userLevel = user.userlevel || "";
+  const canViewRecentActivities =
+    userLevel === "Administrator" || userLevel === "Mancom";
+
   useEffect(() => {
-    fetchDashboardSummary();
+    loadDashboardSummary();
   }, []);
 
-  const fetchDashboardSummary = async () => {
+  const loadDashboardSummary = async () => {
+    try {
+      setLoading(true);
+      setMessage("");
+
+      const cachedData = sessionStorage.getItem(DASHBOARD_CACHE_KEY);
+      const cachedTime = sessionStorage.getItem(DASHBOARD_CACHE_TIME_KEY);
+
+      const now = Date.now();
+
+      if (cachedData && cachedTime && now - Number(cachedTime) < CACHE_DURATION) {
+        setDashboardData(JSON.parse(cachedData));
+        setLoading(false);
+        return;
+      }
+
+      await fetchDashboardSummary();
+    } catch (error) {
+      console.error("Cache read error:", error.message);
+      await fetchDashboardSummary();
+    }
+  };
+
+  const fetchDashboardSummary = async (forceRefresh = false) => {
     try {
       setLoading(true);
       setMessage("");
@@ -33,16 +65,35 @@ export default function Home() {
       const data = response.data;
 
       if (data.success === 1) {
-        setDashboardData(data.data || null);
+        const freshData = data.data || null;
+
+        setDashboardData(freshData);
+
+        sessionStorage.setItem(
+          DASHBOARD_CACHE_KEY,
+          JSON.stringify(freshData)
+        );
+        sessionStorage.setItem(
+          DASHBOARD_CACHE_TIME_KEY,
+          Date.now().toString()
+        );
       } else {
+        setDashboardData(null);
         setMessage(data.msg || "Unable to load dashboard data.");
       }
     } catch (error) {
       console.error("Dashboard fetch error:", error.response?.data || error.message);
+      setDashboardData(null);
       setMessage("Something went wrong while loading dashboard data.");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRefreshDashboard = async () => {
+    sessionStorage.removeItem(DASHBOARD_CACHE_KEY);
+    sessionStorage.removeItem(DASHBOARD_CACHE_TIME_KEY);
+    await fetchDashboardSummary(true);
   };
 
   const formatNumber = (value) => {
@@ -128,7 +179,16 @@ export default function Home() {
         </div>
       ) : (
         <>
-          {/* Top Statistics */}
+          <div className="d-flex justify-content-end mb-3">
+            <button
+              type="button"
+              className="btn btn-outline-secondary btn-sm"
+              onClick={handleRefreshDashboard}
+            >
+              Refresh Dashboard
+            </button>
+          </div>
+
           <Row className="g-4 mb-4">
             {stats.map((item, index) => (
               <Col xl={3} md={6} key={index}>
@@ -146,9 +206,7 @@ export default function Home() {
             ))}
           </Row>
 
-          {/* Middle Content */}
           <Row className="g-4 mb-4">
-            {/* RFID Activity Overview */}
             <Col lg={8}>
               <Card className="border-0 shadow-sm rounded-4 h-100">
                 <Card.Body className="p-4">
@@ -216,7 +274,6 @@ export default function Home() {
               </Card>
             </Col>
 
-            {/* Account Health */}
             <Col lg={4}>
               <Card className="border-0 shadow-sm rounded-4 h-100">
                 <Card.Body className="p-4">
@@ -281,57 +338,56 @@ export default function Home() {
             </Col>
           </Row>
 
-          {/* Bottom Content */}
           <Row className="g-4">
-            {/* Recent Activities */}
-            <Col lg={8}>
-              <Card className="border-0 shadow-sm rounded-4">
-                <Card.Body className="p-4">
-                  <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-                    <h5 className="mb-0 fw-bold">Recent Support Activities</h5>
-                    <Badge bg="light" text="dark" pill>
-                      Latest
-                    </Badge>
-                  </div>
+            {canViewRecentActivities && (
+              <Col lg={8}>
+                <Card className="border-0 shadow-sm rounded-4 h-100">
+                  <Card.Body className="p-4">
+                    <div className="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                      <h5 className="mb-0 fw-bold">Recent Support Activities</h5>
+                      <Badge bg="light" text="dark" pill>
+                        Latest
+                      </Badge>
+                    </div>
 
-                  <div className="table-responsive">
-                    <Table className="custom-table align-middle mb-0">
-                      <thead>
-                        <tr>
-                          <th>Agent</th>
-                          <th>Action</th>
-                          <th>Account</th>
-                          <th>Status</th>
-                          <th>Time</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {recentActivities.length > 0 ? (
-                          recentActivities.map((item, index) => (
-                            <tr key={index}>
-                              <td>{item.agent}</td>
-                              <td>{item.action}</td>
-                              <td>{item.account}</td>
-                              <td>{getStatusBadge(item.status)}</td>
-                              <td>{formatDateTime(item.time)}</td>
-                            </tr>
-                          ))
-                        ) : (
+                    <div className="table-responsive">
+                      <Table className="custom-table align-middle mb-0">
+                        <thead>
                           <tr>
-                            <td colSpan="5" className="text-center text-muted py-4">
-                              No recent activities found
-                            </td>
+                            <th>Agent</th>
+                            <th>Action</th>
+                            <th>Account</th>
+                            <th>Status</th>
+                            <th>Time</th>
                           </tr>
-                        )}
-                      </tbody>
-                    </Table>
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
+                        </thead>
+                        <tbody>
+                          {recentActivities.length > 0 ? (
+                            recentActivities.map((item, index) => (
+                              <tr key={index}>
+                                <td>{item.agent}</td>
+                                <td>{item.action}</td>
+                                <td>{item.account}</td>
+                                <td>{getStatusBadge(item.status)}</td>
+                                <td>{formatDateTime(item.time)}</td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="5" className="text-center text-muted py-4">
+                                No recent activities found
+                              </td>
+                            </tr>
+                          )}
+                        </tbody>
+                      </Table>
+                    </div>
+                  </Card.Body>
+                </Card>
+              </Col>
+            )}
 
-            {/* Portal Support Summary */}
-            <Col lg={4}>
+            <Col lg={canViewRecentActivities ? 4 : 12}>
               <Card className="border-0 shadow-sm rounded-4 h-100">
                 <Card.Body className="p-4">
                   <h5 className="mb-3 fw-bold">Portal Support Summary</h5>

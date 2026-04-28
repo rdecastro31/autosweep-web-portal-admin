@@ -57,6 +57,7 @@ export default function AddUserModal({
               <option value="">Select user level</option>
               <option value="Administrator">Administrator</option>
               <option value="System User">System User</option>
+              <option value="Mancom">Mancom</option>
             </Form.Select>
           </Form.Group>
         </Form>

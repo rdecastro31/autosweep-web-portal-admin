@@ -19,6 +19,8 @@ import { FiEye, FiEyeOff } from "react-icons/fi";
 function Login() {
   const navigate = useNavigate();
 
+
+
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -157,9 +159,7 @@ function Login() {
                 </Button>
               </Form>
 
-              <div className="text-center mt-4">
-                <span className="text-muted forgot-link">Forgot password?</span>
-              </div>
+        
             </div>
           </Col>
         </Row>

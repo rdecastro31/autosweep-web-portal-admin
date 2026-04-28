@@ -20,25 +20,25 @@ function Sidebar() {
       to: "/dashboard",
       icon: <FiHome />,
       label: "Dashboard",
-      roles: ["Administrator", "System User"],
+      roles: ["Administrator", "System User", "Mancom"],
     },
     {
       to: "/dashboard/main-accounts",
       icon: <FiUsers />,
       label: "Main Accounts",
-      roles: ["Administrator", "System User"],
+      roles: ["Administrator", "System User", "Mancom"],
     },
     {
       to: "/dashboard/sub-accounts",
       icon: <FiUserPlus />,
       label: "Sub Accounts",
-      roles: ["Administrator", "System User"],
+      roles: ["Administrator", "System User", "Mancom"],
     },
     {
       to: "/dashboard/ams",
       icon: <FiDatabase />,
       label: "Check AMS",
-      roles: ["Administrator", "System User"],
+      roles: ["Administrator", "System User", "Mancom"],
     },
     {
       divider: true,
@@ -51,9 +51,9 @@ function Sidebar() {
       roles: ["Administrator"],
     },
     {
-      to: "/dashboard/transactions",
+      to: "/dashboard/search-ticket",
       icon: <FiCreditCard />,
-      label: "Transactions",
+      label: "Search Ticket",
       roles: ["Administrator"],
     },
     {

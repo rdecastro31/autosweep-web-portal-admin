@@ -4,16 +4,22 @@ import { Button, Modal, Form, Spinner } from "react-bootstrap";
 export default function UpdateUserModal({
   show,
   onHide,
-  user, // selected user object
-  userLevelOptions = [], // array of strings
-  onSubmit, // function({ id, name, userlevel })
+  user,
+  userLevelOptions = [],
+  onSubmit,
   submitting = false,
 }) {
   const [form, setForm] = useState({ name: "", userlevel: "" });
 
   const levelOptions = useMemo(() => {
-    // ensure "Select..." option even if empty list is passed
-    return (userLevelOptions || []).filter(Boolean);
+    const baseOptions = (userLevelOptions || []).filter(Boolean);
+
+    // Ensure required roles exist
+    const requiredLevels = ["Administrator", "Mancom", "System User"];
+
+    const merged = [...new Set([...baseOptions, ...requiredLevels])];
+
+    return merged;
   }, [userLevelOptions]);
 
   useEffect(() => {
@@ -40,7 +46,8 @@ export default function UpdateUserModal({
   };
 
   const isValid =
-    form.name.trim().length > 0 && String(form.userlevel || "").trim().length > 0;
+    form.name.trim().length > 0 &&
+    String(form.userlevel || "").trim().length > 0;
 
   return (
     <Modal show={show} onHide={onHide} centered backdrop="static">

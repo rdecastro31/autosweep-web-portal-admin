@@ -61,7 +61,7 @@ export default function AddAccountModal({
               onChange={handleChange}
               placeholder="Enter email"
               inputMode="email"
-              maxLength={20}
+              maxLength={150}
             />
           </Form.Group>
 
@@ -73,7 +73,7 @@ export default function AddAccountModal({
               value={formData.name}
               onChange={handleChange}
               placeholder="Enter full name"
-              maxLength={40}
+              maxLength={80}
               
             />
           </Form.Group>
